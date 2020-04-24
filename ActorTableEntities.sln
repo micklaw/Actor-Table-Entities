@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30001.183
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActorTableEntities", "ActorTableEntities\ActorTableEntities.csproj", "{1CED80F8-213E-4946-A7A5-78A7712CDFE6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{5CE78EA8-2143-44E3-B132-F842D89EC084}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleHttpFunctions", "SampleHttpFunctions\SampleHttpFunctions.csproj", "{891E7514-0BB3-417A-9DD1-1F7A476A4CA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{31B91805-503D-4B2A-933F-66ACE4389A3C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
+		Build\build.yml = Build\build.yml
+		NuGet.Config = NuGet.Config
+		Build\release.yml = Build\release.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CED80F8-213E-4946-A7A5-78A7712CDFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CED80F8-213E-4946-A7A5-78A7712CDFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CED80F8-213E-4946-A7A5-78A7712CDFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CED80F8-213E-4946-A7A5-78A7712CDFE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{891E7514-0BB3-417A-9DD1-1F7A476A4CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{891E7514-0BB3-417A-9DD1-1F7A476A4CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{891E7514-0BB3-417A-9DD1-1F7A476A4CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{891E7514-0BB3-417A-9DD1-1F7A476A4CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{891E7514-0BB3-417A-9DD1-1F7A476A4CA4} = {5CE78EA8-2143-44E3-B132-F842D89EC084}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A0F8612-93AA-44ED-8653-D70F4A3E25BE}
+	EndGlobalSection
+EndGlobal

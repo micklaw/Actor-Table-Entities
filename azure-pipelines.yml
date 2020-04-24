@@ -1,0 +1,62 @@
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+
+pr:
+  branches:
+    include:
+    - feature/*
+    - release/*
+    - hotfix/*
+    - pull-request/*
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  GitVersion.SemVer: ''
+
+stages:
+- stage: 'Setup'
+  displayName: 'Setup build'
+  jobs:
+  - job: 'Version'
+    displayName: 'Version Build'
+    steps:
+    - task: UseGitVersion@5
+      displayName: gitversion
+      inputs:
+        versionSpec: '5.x'
+        updateAssemblyInfo: false
+
+- stage: 'Build'
+  displayName: 'Build'
+  dependsOn: ['Setup']
+  jobs:
+  - job: 'Build'
+    displayName: 'Build & Publish Artifacts'
+    variables:
+    - group: 'Common'
+    steps:
+    - template: Build/build.yml
+
+- stage: 'Release' 
+  displayName: 'Release to Live'
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: ['Setup','Build']
+  jobs:
+  - deployment: 'Appplication'
+    displayName: 'Api & UI deployment'
+    environment: 'Live'
+    variables:
+    - group: 'Common'
+    - group: 'Live'
+    strategy: 
+      runOnce:
+        deploy:               
+          steps:
+          - template: Build/release.yml
+            parameters:
+              serviceConnection: 'ActorTableEntities-Connection'
