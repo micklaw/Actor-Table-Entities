@@ -22,21 +22,11 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: Publish
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  inputs:
-    command: publish
-    publishWebProjects: false
-    projects: |
-     **/ActorTableEntities.csproj
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer);AssemblyVersion=$(GitVersion.SemVer)'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Artifact'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    targetPath: '$(build.artifactstagingdirectory)'
+    targetPath: '**/*.nupkg'
     artifactName: 'drop'
