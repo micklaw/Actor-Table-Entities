@@ -22,7 +22,7 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer)'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER)'
 
 - task: DotNetCoreCLI@2
   displayName: Pack
@@ -32,7 +32,7 @@ steps:
     publishWebProjects: false
     projects: |
      **/ActorTableEntities.csproj
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer) -o .'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER) -o .'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Artifact'
