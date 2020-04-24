@@ -17,6 +17,7 @@ pool:
 
 variables:
   GitVersion.SemVer: ''
+  BuildConfiguration: Release
 
 stages:
 - stage: 'Setup'
@@ -37,8 +38,6 @@ stages:
   jobs:
   - job: 'Build'
     displayName: 'Build & Publish Artifacts'
-    variables:
-    - group: 'Common'
     steps:
     - template: Build/build.yml
 
@@ -50,9 +49,6 @@ stages:
   - deployment: 'Appplication'
     displayName: 'Api & UI deployment'
     environment: 'Live'
-    variables:
-    - group: 'Common'
-    - group: 'Live'
     strategy: 
       runOnce:
         deploy:               
