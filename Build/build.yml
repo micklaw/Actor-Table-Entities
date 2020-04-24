@@ -32,7 +32,7 @@ steps:
     publishWebProjects: false
     projects: |
      **/ActorTableEntities.csproj
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER) -o $(BUILD.ARTIFACTSTAGINGDIRECTORY)''
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER) -o $(BUILD.ARTIFACTSTAGINGDIRECTORY)'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Artifact'
