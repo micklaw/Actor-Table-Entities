@@ -37,22 +37,6 @@ stages:
   dependsOn: ['Setup']
   jobs:
   - job: 'Build'
-    displayName: 'Build & Publish Artifacts'
+    displayName: 'Build, Test & Release'
     steps:
     - template: Build/build.yml
-
-- stage: 'Release' 
-  displayName: 'Release to Live'
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  dependsOn: ['Setup','Build']
-  jobs:
-  - deployment: 'Appplication'
-    displayName: 'Api & UI deployment'
-    environment: 'Live'
-    strategy: 
-      runOnce:
-        deploy:               
-          steps:
-          - template: Build/release.yml
-            parameters:
-              serviceConnection: 'ActorTableEntities-Connection'

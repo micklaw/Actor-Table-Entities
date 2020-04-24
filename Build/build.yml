@@ -32,11 +32,19 @@ steps:
     publishWebProjects: false
     projects: |
      **/ActorTableEntities.csproj
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER) -o .'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(BUILD.BUILDNUMBER)' -o $(BUILD.ARTIFACTSTAGINGDIRECTORY)
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Artifact'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    targetPath: '**/ActorTableEntities*.nupkg'
+    targetPath: 'ActorTableEntities*.nupkg'
     artifactName: 'drop'
+
+- task: NuGetCommand@2
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')))
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Nuget'
