@@ -7,7 +7,9 @@
     <Version>0.0.0</Version>
     <Authors>Michael Law</Authors>
     <Company>MLWD Ltd</Company>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <Deterministic>False</Deterministic>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

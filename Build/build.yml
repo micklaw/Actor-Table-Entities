@@ -22,11 +22,21 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer);AssemblyVersion=$(GitVersion.SemVer)'
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer)'
+
+- task: DotNetCoreCLI@2
+  displayName: Pack
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  inputs:
+    command: pack
+    publishWebProjects: false
+    projects: |
+     **/ActorTableEntities.csproj
+    arguments: '--configuration $(BuildConfiguration) /p:Version=$(GitVersion.SemVer) -o .'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Artifact'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    targetPath: '**/*.nupkg'
+    targetPath: '**/ActorTableEntities*.nupkg'
     artifactName: 'drop'
