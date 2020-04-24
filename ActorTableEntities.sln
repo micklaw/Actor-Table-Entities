@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{31B91805
 		azure-pipelines.yml = azure-pipelines.yml
 		Build\build.yml = Build\build.yml
 		NuGet.Config = NuGet.Config
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global

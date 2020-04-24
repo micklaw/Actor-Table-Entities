@@ -38,7 +38,7 @@ steps:
   displayName: 'Publish Artifact'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   inputs:
-    targetPath: '$(BUILD.ARTIFACTSTAGINGDIRECTORY)/ActorTableEntities*.nupkg'
+    targetPath: '$(BUILD.ARTIFACTSTAGINGDIRECTORY)'
     artifactName: 'drop'
 
 - task: NuGetCommand@2
