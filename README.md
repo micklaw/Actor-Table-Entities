@@ -1,7 +1,7 @@
 # Actor Table Entities
 A play on Azure Functions Durable Entities without the queuing. Locks a blob behind the scenes to ensure the actor can only be amended once, then free us for the next connection.
 
-[![Build Status](https://dev.azure.com/mlwdltd/Actor%20Table%20Entities/_apis/build/status/micklaw.Actor-Table-Entities?branchName=develop)](https://dev.azure.com/mlwdltd/Actor%20Table%20Entities/_build/latest?definitionId=9&branchName=develop)
+[![Build Status](https://dev.azure.com/mlwdltd/Actor%20Table%20Entities/_apis/build/status/micklaw.Actor-Table-Entities?branchName=develop)](https://dev.azure.com/mlwdltd/Actor%20Table%20Entities/_build/latest?definitionId=10&branchName=develop)
 
 ## Why not use Durable Entities?
 I did, honestly, and yes they are amazing, but for my specific use case they did fit well. I wanted something that was:
