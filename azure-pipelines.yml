@@ -21,7 +21,6 @@ variables:
 stages:
 - stage: 'Build'
   displayName: 'Build'
-  dependsOn: ['Setup']
   jobs:
   - job: 'Build'
     displayName: 'Build, Test & Release'
