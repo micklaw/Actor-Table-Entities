@@ -3,7 +3,6 @@ trigger:
     include:
     - master
     - develop
-    - release/*
 
 pr:
   branches:
@@ -17,22 +16,9 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  GitVersion.SemVer: ''
   BuildConfiguration: Release
 
 stages:
-- stage: 'Setup'
-  displayName: 'Setup build'
-  jobs:
-  - job: 'Version'
-    displayName: 'Version Build'
-    steps:
-    - task: UseGitVersion@5
-      displayName: gitversion
-      inputs:
-        versionSpec: '5.x'
-        updateAssemblyInfo: false
-
 - stage: 'Build'
   displayName: 'Build'
   dependsOn: ['Setup']

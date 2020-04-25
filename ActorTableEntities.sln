@@ -14,8 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{31B91805
 		.gitignore = .gitignore
 		azure-pipelines.yml = azure-pipelines.yml
 		Build\build.yml = Build\build.yml
+		Directory.Build.props = Directory.Build.props
 		NuGet.Config = NuGet.Config
 		README.md = README.md
+		version.json = version.json
 	EndProjectSection
 EndProject
 Global
