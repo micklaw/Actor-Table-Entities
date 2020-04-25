@@ -3,15 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.0-alpha000</Version>
     <Company />
     <Authors>Michael Law</Authors>
     <PackageLicenseUrl>https://github.com/micklaw/Actor-Table-Entities/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/micklaw/Actor-Table-Entities</PackageProjectUrl>
     <RepositoryUrl>https://github.com/micklaw/Actor-Table-Entities.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
-    <FileVersion>0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
