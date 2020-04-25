@@ -7,10 +7,7 @@ trigger:
 pr:
   branches:
     include:
-    - feature/*
-    - release/*
-    - hotfix/*
-    - pull-request/*
+    - '*'
 
 pool:
   vmImage: 'windows-latest'
