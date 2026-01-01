@@ -37,7 +37,8 @@ namespace ActorTableEntities.Internal
 
             await this.mutex.AcquireAsync();
 
-            // If blob state store is configured and entity is ActorTableEntity, use new approach
+            // If blob state store is configured and T is or derives from ActorTableEntity, use new approach
+            // typeof(ActorTableEntity).IsAssignableFrom(typeof(T)) returns true when T is ActorTableEntity or T inherits from it
             if (blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T)))
             {
                 // Get metadata from table
@@ -99,7 +100,8 @@ namespace ActorTableEntities.Internal
             {
                 if (this.Entity != null)
                 {
-                    // If blob state store is configured and entity is ActorTableEntity, use new approach
+                    // If blob state store is configured and T is or derives from ActorTableEntity, use new approach
+                    // typeof(ActorTableEntity).IsAssignableFrom(typeof(T)) returns true when T is ActorTableEntity or T inherits from it
                     if (blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T)))
                     {
                         // Save state to blob

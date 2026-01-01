@@ -26,9 +26,20 @@ namespace ActorTableEntities.Internal.Persistence
                 throw new ArgumentNullException(nameof(containerName));
             }
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnection);
-            this.blobClient = storageAccount.CreateCloudBlobClient();
-            this.containerName = containerName;
+            try
+            {
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnection);
+                this.blobClient = storageAccount.CreateCloudBlobClient();
+                this.containerName = containerName;
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is FormatException)
+            {
+                throw new ArgumentException(
+                    "Invalid storage connection string provided for blob state storage. " +
+                    "Please verify the StorageConnectionString in ActorTableEntityOptions.", 
+                    nameof(storageConnection), 
+                    ex);
+            }
         }
 
         public async Task<string> ReadBlobAsync(string blobName)

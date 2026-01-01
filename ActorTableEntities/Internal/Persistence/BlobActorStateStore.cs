@@ -32,7 +32,16 @@ namespace ActorTableEntities.Internal.Persistence
                 return null;
             }
 
-            return JsonConvert.DeserializeObject<T>(json);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to deserialize actor state for PartitionKey='{partitionKey}', RowKey='{rowKey}'. " +
+                    $"The stored JSON may be incompatible with type '{typeof(T).Name}'.", ex);
+            }
         }
 
         public async Task SaveStateAsync<T>(string partitionKey, string rowKey, T state) where T : class
@@ -46,8 +55,17 @@ namespace ActorTableEntities.Internal.Persistence
             var normalizedRowKey = tableEntityProvider.ToKey(rowKey);
             var blobName = blobStateProvider.ToBlobName(normalizedPartitionKey, normalizedRowKey);
 
-            var json = JsonConvert.SerializeObject(state);
-            await blobStateProvider.WriteBlobAsync(blobName, json);
+            try
+            {
+                var json = JsonConvert.SerializeObject(state);
+                await blobStateProvider.WriteBlobAsync(blobName, json);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to serialize actor state for PartitionKey='{partitionKey}', RowKey='{rowKey}'. " +
+                    $"Type '{typeof(T).Name}' may not be serializable.", ex);
+            }
         }
 
         public async Task<bool> StateExistsAsync(string partitionKey, string rowKey)
