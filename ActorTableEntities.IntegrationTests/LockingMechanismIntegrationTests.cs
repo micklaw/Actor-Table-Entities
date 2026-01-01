@@ -146,16 +146,16 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
     }
 
     [Fact(Skip = "Requires Azurite/Storage Emulator - Enable in CI/CD")]
-    public async Task GetLocked_ShouldReleaseAfterTimeout_WhenNotFlushed()
+    public async Task GetLocked_ShouldReleaseAfterDisposal_WhenNotFlushed()
     {
         // Arrange
         var uniqueKey = $"{testPartitionKey}-timeout-{Guid.NewGuid()}";
 
-        // Act - Acquire lock and let it timeout without explicit flush
+        // Act - Acquire lock and release it by disposing without explicit flush
         var state = await client!.GetLocked<TestCounter>(uniqueKey, "timeout-entity");
         state.Entity.Count = 1;
         
-        // Wait for potential lease timeout (60 seconds is default, but we'll test disposal)
+        // Explicitly dispose to release the lock
         await state.DisposeAsync();
 
         // Assert - Should be able to acquire the lock again
