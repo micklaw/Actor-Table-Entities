@@ -59,6 +59,7 @@ The code above lets you take a hold of an entity, do some stuff on it, then rele
 ## Setup
 Finally, install the nuget package above, and bootstrap your code like so.
 
+### Standard Configuration (Table Storage)
 ```csharp
 public class Startup : IWebJobsStartup
 {
@@ -74,6 +75,32 @@ public class Startup : IWebJobsStartup
     }
 }
 ```
+
+### Enhanced Configuration (Blob Storage for State)
+For improved scalability and to eliminate Table Storage serialization constraints, you can configure the library to store actor state in Azure Blob Storage while keeping metadata in Table Storage:
+
+```csharp
+public class Startup : IWebJobsStartup
+{
+    public void Configure(IWebJobsBuilder builder)
+    {
+        builder.AddActorTableEntities(options =>
+        {
+            options.StorageConnectionString = "UseDevelopmentStorage=true";
+            options.ContainerName = "entitylocks";
+            options.StateContainerName = "actorstate"; // Enable blob-based state storage
+            options.WithRetry = true;
+            options.RetryIntervalMilliseconds = 100;
+        });
+    }
+}
+```
+
+When `StateContainerName` is configured:
+- **Actor metadata** (PartitionKey, RowKey, Timestamp, ETag) is stored in Azure Table Storage
+- **Actor state** is stored as JSON in Azure Blob Storage
+- This approach provides better scalability and removes serialization limitations
+- The existing blob locking mechanism ensures thread-safe operations
 
 ## Built with it
 
