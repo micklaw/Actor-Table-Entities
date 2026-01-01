@@ -1,16 +1,15 @@
 ﻿using ActorTableEntities;
 
-namespace SampleHttpFunctions.Entities
+namespace SampleHttpFunctions.Entities;
+
+public class Counter : ActorTableEntity
 {
-    public class Counter : ActorTableEntity
+    public int Count { get; set; }
+
+    public Counter Increment()
     {
-        public int Count { get; set; }
+        Count = Count + 1;
 
-        public Counter Increment()
-        {
-            Count = Count + 1;
-
-            return this;
-        }
+        return this;
     }
 }

@@ -2,19 +2,21 @@
 using ActorTableEntities.Internal.Lock;
 using ActorTableEntities.Internal.Persistence;
 using ActorTableEntities.Internal.Persistence.Extensions;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure.Data.Tables;
 
 namespace ActorTableEntities.Internal
 {
     internal class ActorTableEntityClient : IActorTableEntityClient
     {
         private readonly TableEntityProvider tableStorageProvider;
+        private readonly IBlobActorStateStore blobActorStateStore;
 
         private DistributedLock Mutex { get; set; }
 
-        public ActorTableEntityClient(TableEntityProvider tableStorageProvider)
+        public ActorTableEntityClient(TableEntityProvider tableStorageProvider, IBlobActorStateStore blobActorStateStore = null)
         {
             this.tableStorageProvider = tableStorageProvider;
+            this.blobActorStateStore = blobActorStateStore;
         }
 
         public async Task<T> Get<T>(string partitionKey, string rowKey) where T : class, ITableEntity, new()
@@ -38,7 +40,7 @@ namespace ActorTableEntities.Internal
 
             Mutex = DistributedLockFactory.Get(tableStorageProvider.ToKey(partitionKey + rowKey));
 
-            var state = new ActorTableEntityClientState<T>(Mutex, tableStorageProvider);
+            var state = new ActorTableEntityClientState<T>(Mutex, tableStorageProvider, blobActorStateStore);
             await state.Hold(partitionKey, rowKey);
             return state;
         }

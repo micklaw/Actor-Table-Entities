@@ -5,8 +5,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ActorTableEntities.Internal.Persistence.Extensions;
 using ActorTableEntities.Internal.Persistence.Models;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure;
+using Azure.Data.Tables;
 
 namespace ActorTableEntities.Internal.Persistence
 {
@@ -24,7 +24,7 @@ namespace ActorTableEntities.Internal.Persistence
             return this.Response<T>(provider => provider.InsertOrReplace(entities));
         }
 
-        public Task<PersistResponse<T>> Get<T>(string partitionKey, string rowKey) where T : ITableEntity
+        public Task<PersistResponse<T>> Get<T>(string partitionKey, string rowKey) where T : class, ITableEntity, new()
         {
             return this.Response<T>(provider => provider.Get<T>(ToKey(partitionKey), ToKey(rowKey)));
         }
@@ -41,7 +41,7 @@ namespace ActorTableEntities.Internal.Persistence
             return disallowedTableKeysChars.Replace(value, string.Empty);
         }
 
-        private async Task<PersistResponse<T>> Response<T>(Func<TableStorageProvider, Task<TableResult>> resultAction) where T : ITableEntity
+        private async Task<PersistResponse<T>> Response<T>(Func<TableStorageProvider, Task<Response>> resultAction) where T : ITableEntity
         {
             try
             {
@@ -49,42 +49,46 @@ namespace ActorTableEntities.Internal.Persistence
 
                 return ToPersistResponseOfType<T>(result);
             }
-            catch (StorageException exception)
+            catch (RequestFailedException exception)
             {
                 return ToPersistResponseOfType<T>(exception);
             }
         }
 
-        private PersistResponse<T> ToPersistResponseOfType<T>(TableResult result) where T : ITableEntity
+        private async Task<PersistResponse<T>> Response<T>(Func<TableStorageProvider, Task<Response<T>>> resultAction) where T : class, ITableEntity, new()
+        {
+            try
+            {
+                var result = await resultAction(this.storageProvider);
+
+                return ToPersistResponseOfType<T>(result.GetRawResponse(), result.Value);
+            }
+            catch (RequestFailedException exception)
+            {
+                return ToPersistResponseOfType<T>(exception);
+            }
+        }
+
+        private PersistResponse<T> ToPersistResponseOfType<T>(Response result, T entity = default) where T : ITableEntity
         {
             result.CheckNotNull(nameof(result));
 
-            var model = default(T);
-
-            if (result.HttpStatusCode.IsSuccess())
-            {
-                if (result.Result is T entity)
-                {
-                    model = entity;
-                }
-            }
-
             return new PersistResponse<T>()
             {
-                Message = result.HttpStatusCode.IsSuccess() ? "OK" : "Failed",
-                Result = model,
-                StatusCode = result.HttpStatusCode,
-                ETag = result.Etag
+                Message = result.IsError ? "Failed" : "OK",
+                Result = entity,
+                StatusCode = result.Status,
+                ETag = result.Headers.ETag?.ToString()
             };
         }
 
-        private PersistResponse<T> ToPersistResponseOfType<T>(StorageException exception) where T : ITableEntity
+        private PersistResponse<T> ToPersistResponseOfType<T>(RequestFailedException exception) where T : ITableEntity
         {
             return new PersistResponse<T>()
             {
-                Message = $"{exception.RequestInformation.ErrorCode}: {exception.RequestInformation.ExceptionInfo.Message}",
-                StatusCode = exception.RequestInformation.HttpStatusCode,
-                ETag = exception.RequestInformation.Etag
+                Message = $"{exception.ErrorCode}: {exception.Message}",
+                StatusCode = exception.Status,
+                ETag = null
             };
         }
     }

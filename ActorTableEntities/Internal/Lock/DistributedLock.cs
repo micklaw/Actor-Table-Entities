@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 
 namespace ActorTableEntities.Internal.Lock
 {
     internal class DistributedLock : IDisposable
     {
-        private readonly CloudBlobContainer containerReference;
-
+        private readonly BlobContainerClient containerClient;
         private readonly string key;
         
         private string leaseId;
@@ -26,30 +25,34 @@ namespace ActorTableEntities.Internal.Lock
             }
 
             this.key = key;
-            this.containerReference = DistributedLockFactory.BlobClient.GetContainerReference(DistributedLockFactory.Settings.ContainerName);
+            this.containerClient = DistributedLockFactory.BlobServiceClient.GetBlobContainerClient(DistributedLockFactory.Settings.ContainerName);
         }
 
         internal async Task AcquireAsync(ActorTableEntityOptions options = null)
         {
-            var blobReference = await GetBlobReference();
+            var blobClient = await GetBlobReference();
 
-            if (!await blobReference.ExistsAsync())
+            if (!await blobClient.ExistsAsync())
             {
-                await blobReference.UploadTextAsync(string.Empty);
+                await blobClient.UploadAsync(BinaryData.FromString(string.Empty));
             }
+
+            var leaseClient = blobClient.GetBlobLeaseClient();
 
             try
             {
                 if (options?.WithRetry == true)
                 {
-                    leaseId = await Do(() => blobReference.AcquireLeaseAsync(TimeSpan.FromMilliseconds(options.RetryIntervalMilliseconds)));
+                    var lease = await Do(() => leaseClient.AcquireAsync(TimeSpan.FromMilliseconds(options.RetryIntervalMilliseconds)));
+                    leaseId = lease.Value.LeaseId;
                 }
                 else
                 {
-                    leaseId = await blobReference.AcquireLeaseAsync(TimeSpan.FromSeconds(60));
+                    var lease = await leaseClient.AcquireAsync(TimeSpan.FromSeconds(60));
+                    leaseId = lease.Value.LeaseId;
                 }
             }
-            catch (StorageException ex) when (ex.RequestInformation.HttpStatusCode == (int) HttpStatusCode.Conflict)
+            catch (RequestFailedException ex) when (ex.Status == 409)
             {
                 throw new InvalidOperationException($"Another job is already running for {key}.");
             }
@@ -57,28 +60,24 @@ namespace ActorTableEntities.Internal.Lock
 
         internal async Task ReleaseAsync()
         {
-            var blobReference = await GetBlobReference();
+            var blobClient = await GetBlobReference();
+            var leaseClient = blobClient.GetBlobLeaseClient(leaseId);
 
-            await blobReference.ReleaseLeaseAsync(new AccessCondition
-            {
-                LeaseId = leaseId
-            });
+            await leaseClient.ReleaseAsync();
         }
 
         internal async Task RenewAsync()
         {
-            var blobReference = await GetBlobReference();
+            var blobClient = await GetBlobReference();
+            var leaseClient = blobClient.GetBlobLeaseClient(leaseId);
 
-            await blobReference.RenewLeaseAsync(new AccessCondition
-            {
-                LeaseId = leaseId
-            });
+            await leaseClient.RenewAsync();
         }
 
-        private async Task<CloudBlockBlob> GetBlobReference()
+        private async Task<BlobClient> GetBlobReference()
         {
-            await containerReference.CreateIfNotExistsAsync();
-            return containerReference.GetBlockBlobReference(key);
+            await containerClient.CreateIfNotExistsAsync();
+            return containerClient.GetBlobClient(key);
         }
 
         public void Dispose()

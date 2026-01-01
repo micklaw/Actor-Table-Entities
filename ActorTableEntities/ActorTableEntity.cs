@@ -3,52 +3,29 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure;
+using Azure.Data.Tables;
 using Newtonsoft.Json;
 
 namespace ActorTableEntities
 {
-    public abstract class ActorTableEntity : TableEntity
+    public abstract class ActorTableEntity : ITableEntity
     {
         private static readonly ConcurrentDictionary<Type, PropertyInfo[]> Cache = new ConcurrentDictionary<Type, PropertyInfo[]>();
+
+        public string PartitionKey { get; set; }
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         protected ActorTableEntity()
         {
         }
 
         protected ActorTableEntity(string partitionKey, string rowKey)
-            : base(partitionKey, rowKey)
         {
-        }
-
-        public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
-        {
-            var x = base.WriteEntity(operationContext);
-
-            var properties = GetComplexProperties();
-
-            foreach (var property in properties)
-            {
-                x[property.Name] = new EntityProperty(JsonConvert.SerializeObject(property.GetValue(this)));
-            }
-            
-            return x;
-        }
-
-        public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
-        {
-            base.ReadEntity(properties, operationContext);
-
-            var derivedProperties = GetComplexProperties();
-
-            foreach (var property in derivedProperties)
-            {
-                if (properties.ContainsKey(property.Name) && property.CanWrite)
-                {
-                    property.SetValue(this, JsonConvert.DeserializeObject(properties[property.Name].StringValue, property.PropertyType));
-                }
-            }
+            PartitionKey = partitionKey;
+            RowKey = rowKey;
         }
 
         private PropertyInfo[] GetComplexProperties()
