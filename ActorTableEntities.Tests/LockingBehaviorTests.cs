@@ -1,7 +1,6 @@
 using System;
 using ActorTableEntities;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace ActorTableEntities.Tests;
