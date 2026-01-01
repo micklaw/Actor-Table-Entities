@@ -27,8 +27,8 @@ jobs:
       
     - name: Test
       run: |
-        dotnet test ActorTableEntities.Tests/ActorTableEntities.Tests.csproj --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
-        dotnet test ActorTableEntities.IntegrationTests/ActorTableEntities.IntegrationTests.csproj --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
+        dotnet test ActorTableEntities.Tests/ActorTableEntities.Tests.csproj --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=unit-test-results.trx"
+        dotnet test ActorTableEntities.IntegrationTests/ActorTableEntities.IntegrationTests.csproj --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=integration-test-results.trx"
       
     - name: Upload test results
       if: always()
