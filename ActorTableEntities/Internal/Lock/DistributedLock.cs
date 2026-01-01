@@ -101,7 +101,7 @@ namespace ActorTableEntities.Internal.Lock
             disposed = true;
         }
 
-        private Task<T> Do<T>(
+        private async Task<T> Do<T>(
             Func<Task<T>> action,
             int retryInterval = 50,
             int maxAttemptCount = 10)
@@ -114,9 +114,9 @@ namespace ActorTableEntities.Internal.Lock
                 {
                     if (attempted > 0)
                     {
-                        Thread.Sleep(retryInterval);
+                        await Task.Delay(retryInterval);
                     }
-                    return action();
+                    return await action();
                 }
                 catch (Exception ex)
                 {
