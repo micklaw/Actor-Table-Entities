@@ -1,6 +1,5 @@
 using System;
 using ActorTableEntities;
-using Azure.Data.Tables;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
