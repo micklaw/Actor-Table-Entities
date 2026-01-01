@@ -29,7 +29,9 @@ jobs:
       run: dotnet build --configuration Release --no-restore
       
     - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      run: |
+        dotnet test ActorTableEntities.Tests/ActorTableEntities.Tests.csproj --configuration Release --no-build --verbosity normal
+        dotnet test ActorTableEntities.IntegrationTests/ActorTableEntities.IntegrationTests.csproj --configuration Release --no-build --verbosity normal
       
     - name: Pack
       run: dotnet pack ActorTableEntities/ActorTableEntities.csproj --configuration Release --no-build --output ./artifacts /p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
