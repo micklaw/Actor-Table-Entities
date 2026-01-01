@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ActorTableEntities;
-using Azure.Data.Tables;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
