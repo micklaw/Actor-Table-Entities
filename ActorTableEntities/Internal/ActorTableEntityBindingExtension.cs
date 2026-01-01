@@ -12,10 +12,12 @@ namespace ActorTableEntities.Internal
             new ConcurrentDictionary<ActorTableEntityAttribute, IActorTableEntityClient>();
 
         private readonly TableEntityProvider tableEntityProvider;
+        private readonly IBlobActorStateStore blobActorStateStore;
 
-        public ActorTableEntityBindingExtension(TableEntityProvider tableEntityProvider)
+        public ActorTableEntityBindingExtension(TableEntityProvider tableEntityProvider, IBlobActorStateStore blobActorStateStore = null)
         {
             this.tableEntityProvider = tableEntityProvider;
+            this.blobActorStateStore = blobActorStateStore;
         }
 
         public void Initialize(ExtensionConfigContext context)
@@ -27,7 +29,7 @@ namespace ActorTableEntities.Internal
 
         private IActorTableEntityClient BuildCollector(ActorTableEntityAttribute attribute)
         {
-            return this.cachedClients.GetOrAdd(attribute, x => new ActorTableEntityClient(tableEntityProvider));
+            return this.cachedClients.GetOrAdd(attribute, x => new ActorTableEntityClient(tableEntityProvider, blobActorStateStore));
         }
     }
 }
