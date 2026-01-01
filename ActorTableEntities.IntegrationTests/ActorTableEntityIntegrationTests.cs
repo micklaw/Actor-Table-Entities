@@ -15,9 +15,8 @@ public class ActorTableEntityIntegrationTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddActorTableEntities(options =>
+        services.AddActorTableEntities("UseDevelopmentStorage=true", options =>
         {
-            options.StorageConnectionString = "UseDevelopmentStorage=true";
             options.ContainerName = "testlocks";
             options.WithRetry = false;
         });

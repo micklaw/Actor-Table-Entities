@@ -15,11 +15,14 @@ public class LockingBehaviorTests
     public void ActorTableEntityOptions_ShouldHaveDefaultRetryValues()
     {
         // Arrange & Act
-        var options = new ActorTableEntityOptions();
+        var options = new ActorTableEntityOptions
+        {
+            StorageConnectionString = "UseDevelopmentStorage=true"
+        };
 
         // Assert
-        options.WithRetry.Should().BeFalse();
-        options.RetryIntervalMilliseconds.Should().Be(50);
+        options.WithRetry.Should().BeTrue();
+        options.RetryIntervalMilliseconds.Should().Be(100);
     }
 
     [Fact]
@@ -28,6 +31,7 @@ public class LockingBehaviorTests
         // Arrange & Act
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             WithRetry = true,
             RetryIntervalMilliseconds = 100
         };
@@ -48,6 +52,7 @@ public class LockingBehaviorTests
         // Arrange & Act
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             RetryIntervalMilliseconds = intervalMs
         };
 
@@ -61,6 +66,7 @@ public class LockingBehaviorTests
         // Arrange & Act
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             WithRetry = true,
             RetryIntervalMilliseconds = 250
         };
@@ -74,13 +80,14 @@ public class LockingBehaviorTests
     public void ActorTableEntityOptions_Constructor_ShouldSetAllProperties()
     {
         // Arrange & Act
-        var options = new ActorTableEntityOptions(
-            storageConnectionString: "UseDevelopmentStorage=true",
-            containerName: "test-container",
-            stateContainerName: "state-container",
-            withRetry: true,
-            retryIntervalMilliseconds: 100
-        );
+        var options = new ActorTableEntityOptions
+        {
+            StorageConnectionString = "UseDevelopmentStorage=true",
+            ContainerName = "test-container",
+            StateContainerName = "state-container",
+            WithRetry = true,
+            RetryIntervalMilliseconds = 100
+        };
 
         // Assert
         options.StorageConnectionString.Should().Be("UseDevelopmentStorage=true");
@@ -99,6 +106,7 @@ public class LockingBehaviorTests
         // Arrange & Act
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             WithRetry = true,
             RetryIntervalMilliseconds = intervalMs
         };
