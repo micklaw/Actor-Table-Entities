@@ -118,8 +118,10 @@ namespace ActorTableEntities.Internal.Lock
                     }
                     return await action();
                 }
-                catch (Exception ex)
+                catch (RequestFailedException ex) when (ex.Status == 409 || ex.Status == 412)
                 {
+                    // 409 Conflict: Lease is already held by another client
+                    // 412 Precondition Failed: Lease ID mismatch or other lease issues
                     exceptions.Add(ex);
                 }
             }

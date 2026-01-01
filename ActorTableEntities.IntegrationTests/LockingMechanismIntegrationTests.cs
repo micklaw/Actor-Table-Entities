@@ -51,17 +51,21 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
     {
         // Arrange
         var stopwatch = Stopwatch.StartNew();
+        var testRowKey = "counter";
 
         // Act
         await using var state = await client!.GetLocked<TestCounter>(testPartitionKey, testRowKey);
         stopwatch.Stop();
         
+        // Assert - Before flush, lock should not be released
+        state.IsReleased.Should().BeFalse();
+        
         state.Entity.Count++;
         await state.Flush();
 
-        // Assert
+        // After Flush, lock should be released
         state.Entity.Should().NotBeNull();
-        state.IsReleased.Should().BeTrue(); // After Flush, lock should be released
+        state.IsReleased.Should().BeTrue();
         stopwatch.ElapsedMilliseconds.Should().BeGreaterThan(0);
     }
 
@@ -72,6 +76,7 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
         var lockAcquired = new List<DateTime>();
         var lockReleased = new List<DateTime>();
         var tasks = new List<Task>();
+        var sharedRowKey = "concurrent-counter";
 
         // Act - Start multiple concurrent tasks trying to acquire the same lock
         for (int i = 0; i < 3; i++)
@@ -79,7 +84,7 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
             var taskIndex = i;
             tasks.Add(Task.Run(async () =>
             {
-                await using var state = await client!.GetLocked<TestCounter>(testPartitionKey, testRowKey);
+                await using var state = await client!.GetLocked<TestCounter>(testPartitionKey, sharedRowKey);
                 lockAcquired.Add(DateTime.UtcNow);
                 
                 state.Entity.Count++;
