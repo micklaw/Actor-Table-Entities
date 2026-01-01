@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure.Data.Tables;
 
 namespace ActorTableEntities
 {

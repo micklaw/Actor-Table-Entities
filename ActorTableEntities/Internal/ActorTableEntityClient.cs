@@ -2,7 +2,7 @@
 using ActorTableEntities.Internal.Lock;
 using ActorTableEntities.Internal.Persistence;
 using ActorTableEntities.Internal.Persistence.Extensions;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure.Data.Tables;
 
 namespace ActorTableEntities.Internal
 {

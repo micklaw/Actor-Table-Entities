@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using ActorTableEntities.Internal.Lock;
 using ActorTableEntities.Internal.Persistence;
 using ActorTableEntities.Internal.Persistence.Extensions;
-using Microsoft.WindowsAzure.Storage.Table;
+using Azure;
+using Azure.Data.Tables;
 
 namespace ActorTableEntities.Internal
 {
@@ -93,7 +94,7 @@ namespace ActorTableEntities.Internal
                 }
             }
 
-            this.Entity.ETag = "*"; // ML - Ensure clobbering happens as we have a lock
+            this.Entity.ETag = ETag.All; // ML - Ensure clobbering happens as we have a lock
         }
 
         public async Task Flush()
@@ -115,7 +116,7 @@ namespace ActorTableEntities.Internal
                         // Save metadata to table
                         var indexEntity = new ActorIndexEntity(this.Entity.PartitionKey, this.Entity.RowKey)
                         {
-                            ETag = "*"
+                            ETag = ETag.All
                         };
 
                         var result = await tableStorageProvider.InsertOrReplace(indexEntity);
@@ -124,7 +125,7 @@ namespace ActorTableEntities.Internal
                         {
                             // Update entity metadata from table response
                             this.Entity.Timestamp = result.Result.Timestamp;
-                            this.Entity.ETag = result.ETag;
+                            this.Entity.ETag = result.ETag != null ? new ETag(result.ETag) : ETag.All;
                         }
                     }
                     else
