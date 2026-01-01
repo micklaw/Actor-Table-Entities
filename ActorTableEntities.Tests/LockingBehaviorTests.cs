@@ -123,17 +123,4 @@ public class LockingBehaviorTests
         // Assert
         disposableType.IsAssignableFrom(stateType).Should().BeTrue();
     }
-
-    private class TestEntity : ActorTableEntity
-    {
-        public TestEntity() : base()
-        {
-        }
-
-        public TestEntity(string partitionKey, string rowKey) : base(partitionKey, rowKey)
-        {
-        }
-
-        public int Value { get; set; }
-    }
 }
