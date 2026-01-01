@@ -1,37 +1,41 @@
-using System.Threading.Tasks;
 using ActorTableEntities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using SampleHttpFunctions.Entities;
 
-namespace SampleHttpFunctions
+namespace SampleHttpFunctions;
+
+public class FunctionApis
 {
-    public class FunctionApis
+    private readonly IActorTableEntityClient _entityClient;
+
+    public FunctionApis(IActorTableEntityClient entityClient)
     {
-        [FunctionName("UpdateHttpApi")]
-        public async Task<IActionResult> Update(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "update/{name}")] HttpRequest req, string name,
-            [ActorTableEntity] IActorTableEntityClient entityClient)
-        {
-            await using var state = await entityClient.GetLocked<Counter>("entity", name);
+        _entityClient = entityClient;
+    }
 
-            state.Entity.Increment();
+    [Function("UpdateHttpApi")]
+    public async Task<IActionResult> Update(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "update/{name}")] HttpRequest req, 
+        string name)
+    {
+        await using var state = await _entityClient.GetLocked<Counter>("entity", name);
 
-            await state.Flush();
+        state.Entity.Increment();
 
-            return new OkObjectResult(state.Entity);
-        }
+        await state.Flush();
 
-        [FunctionName("GetHttpApi")]
-        public async Task<IActionResult> Get(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "get/{name}")] HttpRequest req, string name,
-            [ActorTableEntity] IActorTableEntityClient entityClient)
-        {
-            var counter = await entityClient.Get<Counter>("entity", name);
+        return new OkObjectResult(state.Entity);
+    }
 
-            return new OkObjectResult(counter);
-        }
+    [Function("GetHttpApi")]
+    public async Task<IActionResult> Get(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "get/{name}")] HttpRequest req, 
+        string name)
+    {
+        var counter = await _entityClient.Get<Counter>("entity", name);
+
+        return new OkObjectResult(counter);
     }
 }

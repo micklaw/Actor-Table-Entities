@@ -9,6 +9,9 @@ namespace ActorTableEntities
 {
     public static class ActorTableEntityX
     {
+        /// <summary>
+        /// Extension method for Azure Functions in-process model (legacy)
+        /// </summary>
         public static IWebJobsBuilder AddActorTableEntities(this IWebJobsBuilder builder, Action<ActorTableEntityOptions> optionsDelegate = null)
         {
             var options = new ActorTableEntityOptions();
@@ -30,6 +33,32 @@ namespace ActorTableEntities
             builder.AddExtension<ActorTableEntityBindingExtension>();
 
             return builder;
+        }
+
+        /// <summary>
+        /// Extension method for Azure Functions isolated worker model (.NET 8+)
+        /// </summary>
+        public static IServiceCollection AddActorTableEntities(this IServiceCollection services, Action<ActorTableEntityOptions> optionsDelegate = null)
+        {
+            var options = new ActorTableEntityOptions();
+
+            optionsDelegate?.Invoke(options);
+
+            DistributedLockFactory.Initialise(options);
+
+            services.AddSingleton(new TableStorageProvider(options.StorageConnectionString));
+            services.AddSingleton<TableEntityProvider>();
+            
+            // Add blob state store components if StateContainerName is configured
+            if (!string.IsNullOrWhiteSpace(options.StateContainerName))
+            {
+                services.AddSingleton(new BlobStateProvider(options.StorageConnectionString, options.StateContainerName));
+                services.AddSingleton<IBlobActorStateStore, BlobActorStateStore>();
+            }
+            
+            services.AddSingleton<IActorTableEntityClient, ActorTableEntityClient>();
+
+            return services;
         }
     }
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 using Newtonsoft.Json;
 
 namespace ActorTableEntities.Internal.Persistence
@@ -11,7 +12,7 @@ namespace ActorTableEntities.Internal.Persistence
     /// </summary>
     internal class BlobStateProvider
     {
-        private readonly CloudBlobClient blobClient;
+        private readonly BlobServiceClient blobServiceClient;
         private readonly string containerName;
 
         public BlobStateProvider(string storageConnection, string containerName)
@@ -28,16 +29,15 @@ namespace ActorTableEntities.Internal.Persistence
 
             try
             {
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnection);
-                this.blobClient = storageAccount.CreateCloudBlobClient();
+                this.blobServiceClient = new BlobServiceClient(storageConnection);
                 this.containerName = containerName;
             }
-            catch (StorageException ex)
+            catch (RequestFailedException ex)
             {
                 throw new ArgumentException(
                     "Storage account configuration error for blob state storage. " +
                     "Please verify the StorageConnectionString in ActorTableEntityOptions. " +
-                    $"Error: {ex.RequestInformation?.ErrorCode}", 
+                    $"Error: {ex.ErrorCode}", 
                     nameof(storageConnection), 
                     ex);
             }
@@ -53,35 +53,36 @@ namespace ActorTableEntities.Internal.Persistence
 
         public async Task<string> ReadBlobAsync(string blobName)
         {
-            var container = blobClient.GetContainerReference(containerName);
-            await container.CreateIfNotExistsAsync();
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync();
 
-            var blob = container.GetBlockBlobReference(blobName);
+            var blobClient = containerClient.GetBlobClient(blobName);
 
-            if (!await blob.ExistsAsync())
+            if (!await blobClient.ExistsAsync())
             {
                 return null;
             }
 
-            return await blob.DownloadTextAsync();
+            var response = await blobClient.DownloadContentAsync();
+            return response.Value.Content.ToString();
         }
 
         public async Task WriteBlobAsync(string blobName, string content)
         {
-            var container = blobClient.GetContainerReference(containerName);
-            await container.CreateIfNotExistsAsync();
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync();
 
-            var blob = container.GetBlockBlobReference(blobName);
-            await blob.UploadTextAsync(content);
+            var blobClient = containerClient.GetBlobClient(blobName);
+            await blobClient.UploadAsync(BinaryData.FromString(content), overwrite: true);
         }
 
         public async Task<bool> BlobExistsAsync(string blobName)
         {
-            var container = blobClient.GetContainerReference(containerName);
-            await container.CreateIfNotExistsAsync();
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync();
 
-            var blob = container.GetBlockBlobReference(blobName);
-            return await blob.ExistsAsync();
+            var blobClient = containerClient.GetBlobClient(blobName);
+            return await blobClient.ExistsAsync();
         }
 
         public string ToBlobName(string partitionKey, string rowKey)

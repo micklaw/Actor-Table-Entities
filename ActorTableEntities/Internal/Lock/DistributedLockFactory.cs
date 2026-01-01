@@ -1,6 +1,5 @@
 ﻿using System;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
 
 namespace ActorTableEntities.Internal.Lock
 {
@@ -9,7 +8,7 @@ namespace ActorTableEntities.Internal.Lock
 
         public static ActorTableEntityOptions Settings { get; private set; }
 
-        public static CloudBlobClient BlobClient { get; private set; }
+        public static BlobServiceClient BlobServiceClient { get; private set; }
 
         public static void Initialise(ActorTableEntityOptions options)
         {
@@ -30,8 +29,7 @@ namespace ActorTableEntities.Internal.Lock
                 throw new ArgumentNullException(nameof(Settings.ContainerName));
             }
 
-            var storageAccount = CloudStorageAccount.Parse(Settings.StorageConnectionString);
-            BlobClient = storageAccount.CreateCloudBlobClient();
+            BlobServiceClient = new BlobServiceClient(Settings.StorageConnectionString);
         }
 
         public static DistributedLock Get(string key) => new DistributedLock(key);
