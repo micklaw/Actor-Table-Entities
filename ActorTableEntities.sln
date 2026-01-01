@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorTableEntities.Integrat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleHttpFunctions.AppHost", "SampleHttpFunctions.AppHost\SampleHttpFunctions.AppHost.csproj", "{FD7967C9-E664-485B-833D-BAE2DC07074B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorTableEntities.Tests", "ActorTableEntities.Tests\ActorTableEntities.Tests.csproj", "{CF91327D-A3C1-4198-B0F9-C9904B602BF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,18 @@ Global
 		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x64.Build.0 = Release|Any CPU
 		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.Build.0 = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|x64.Build.0 = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|x86.Build.0 = Debug|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|x64.ActiveCfg = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|x64.Build.0 = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|x86.ActiveCfg = Release|Any CPU
+		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
