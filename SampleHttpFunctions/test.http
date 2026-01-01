@@ -1,0 +1,7 @@
+GET http://localhost:7071/api/get/test 
+Content-Type: application/json
+
+### 
+
+POST http://localhost:7071/api/update/test 
+Content-Type: application/json

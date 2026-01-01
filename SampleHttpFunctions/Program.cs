@@ -10,15 +10,7 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         
-        // Configure ActorTableEntities
-        services.AddActorTableEntities(options =>
-        {
-            options.StorageConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage") 
-                                             ?? "UseDevelopmentStorage=true";
-            options.ContainerName = "entitylocks";
-            options.WithRetry = true;
-            options.RetryIntervalMilliseconds = 100;
-        });
+        services.AddActorTableEntities(Environment.GetEnvironmentVariable("AzureWebJobsStorage") ?? "UseDevelopmentStorage=true");
     })
     .Build();
 

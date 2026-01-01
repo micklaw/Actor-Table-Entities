@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30001.183
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11222.16 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActorTableEntities", "ActorTableEntities\ActorTableEntities.csproj", "{1CED80F8-213E-4946-A7A5-78A7712CDFE6}"
 EndProject
@@ -21,8 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{31B91805
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorTableEntities.IntegrationTests", "ActorTableEntities.IntegrationTests\ActorTableEntities.IntegrationTests.csproj", "{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleHttpFunctions.AppHost", "SampleHttpFunctions.AppHost\SampleHttpFunctions.AppHost.csproj", "{FD7967C9-E664-485B-833D-BAE2DC07074B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorTableEntities.Tests", "ActorTableEntities.Tests\ActorTableEntities.Tests.csproj", "{CF91327D-A3C1-4198-B0F9-C9904B602BF3}"
 EndProject
@@ -72,18 +70,6 @@ Global
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x64.Build.0 = Release|Any CPU
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x86.Build.0 = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x64.Build.0 = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x86.Build.0 = Debug|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x64.ActiveCfg = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x64.Build.0 = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.ActiveCfg = Release|Any CPU
-		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.Build.0 = Release|Any CPU
 		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF91327D-A3C1-4198-B0F9-C9904B602BF3}.Debug|x64.ActiveCfg = Debug|Any CPU
