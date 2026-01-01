@@ -30,6 +30,15 @@ namespace ActorTableEntities.Internal
             this.blobActorStateStore = blobActorStateStore;
         }
 
+        /// <summary>
+        /// Determines if blob storage should be used for state management.
+        /// Blob storage is used when configured and T is or derives from ActorTableEntity.
+        /// </summary>
+        private bool ShouldUseBlobStorage()
+        {
+            return blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T));
+        }
+
         public async Task Hold(string partitionKey, string rowKey)
         {
             this.partitionKey = partitionKey;
@@ -37,9 +46,7 @@ namespace ActorTableEntities.Internal
 
             await this.mutex.AcquireAsync();
 
-            // If blob state store is configured and T is or derives from ActorTableEntity, use new approach
-            // typeof(ActorTableEntity).IsAssignableFrom(typeof(T)) returns true when T is ActorTableEntity or T inherits from it
-            if (blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T)))
+            if (ShouldUseBlobStorage())
             {
                 // Get metadata from table
                 var indexEntity = await tableStorageProvider.Get<ActorIndexEntity>(partitionKey, rowKey);
@@ -100,9 +107,7 @@ namespace ActorTableEntities.Internal
             {
                 if (this.Entity != null)
                 {
-                    // If blob state store is configured and T is or derives from ActorTableEntity, use new approach
-                    // typeof(ActorTableEntity).IsAssignableFrom(typeof(T)) returns true when T is ActorTableEntity or T inherits from it
-                    if (blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T)))
+                    if (ShouldUseBlobStorage())
                     {
                         // Save state to blob
                         await blobActorStateStore.SaveStateAsync(partitionKey, rowKey, this.Entity);

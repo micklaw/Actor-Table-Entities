@@ -32,6 +32,15 @@ namespace ActorTableEntities.Internal.Persistence
                 this.blobClient = storageAccount.CreateCloudBlobClient();
                 this.containerName = containerName;
             }
+            catch (StorageException ex)
+            {
+                throw new ArgumentException(
+                    "Storage account configuration error for blob state storage. " +
+                    "Please verify the StorageConnectionString in ActorTableEntityOptions. " +
+                    $"Error: {ex.RequestInformation?.ErrorCode}", 
+                    nameof(storageConnection), 
+                    ex);
+            }
             catch (Exception ex) when (ex is ArgumentException || ex is FormatException)
             {
                 throw new ArgumentException(
