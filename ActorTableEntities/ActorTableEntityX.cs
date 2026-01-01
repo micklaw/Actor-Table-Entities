@@ -19,6 +19,14 @@ namespace ActorTableEntities
 
             builder.Services.AddSingleton(new TableStorageProvider(options.StorageConnectionString));
             builder.Services.AddSingleton<TableEntityProvider>();
+            
+            // Add blob state store components if StateContainerName is configured
+            if (!string.IsNullOrWhiteSpace(options.StateContainerName))
+            {
+                builder.Services.AddSingleton(new BlobStateProvider(options.StorageConnectionString, options.StateContainerName));
+                builder.Services.AddSingleton<IBlobActorStateStore, BlobActorStateStore>();
+            }
+            
             builder.AddExtension<ActorTableEntityBindingExtension>();
 
             return builder;
