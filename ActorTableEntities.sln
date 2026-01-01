@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{31B91805
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorTableEntities.IntegrationTests", "ActorTableEntities.IntegrationTests\ActorTableEntities.IntegrationTests.csproj", "{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleHttpFunctions.AppHost", "SampleHttpFunctions.AppHost\SampleHttpFunctions.AppHost.csproj", "{FD7967C9-E664-485B-833D-BAE2DC07074B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,18 @@ Global
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x64.Build.0 = Release|Any CPU
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB8D33B3-4659-40EE-BDF3-E84CD23E0FF3}.Release|x86.Build.0 = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x64.Build.0 = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD7967C9-E664-485B-833D-BAE2DC07074B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
