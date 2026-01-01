@@ -6,13 +6,18 @@
     <Version>2.0.0</Version>
     <Company />
     <Authors>Michael Law</Authors>
-    <PackageLicenseUrl>https://github.com/micklaw/Actor-Table-Entities/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/micklaw/Actor-Table-Entities</PackageProjectUrl>
     <RepositoryUrl>https://github.com/micklaw/Actor-Table-Entities.git</RepositoryUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>A locking mechanism for Azure Table Storage entities with blob storage locks, optimized for quick responses and lower costs.</Description>
     <PackageTags>azure;table-storage;actor-model;distributed-lock;azure-functions</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
