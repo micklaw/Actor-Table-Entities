@@ -19,7 +19,6 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
     private ServiceProvider? serviceProvider;
     private IActorTableEntityClient? client;
     private readonly string testPartitionKey = $"locktest-{Guid.NewGuid()}";
-    private readonly string testRowKey = "counter";
 
     public async Task InitializeAsync()
     {
