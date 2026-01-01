@@ -80,7 +80,7 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
             var taskIndex = i;
             tasks.Add(Task.Run(async () =>
             {
-                await using var state = await client!.GetLocked<TestCounter>(testPartitionKey, $"concurrent-{taskIndex}");
+                await using var state = await client!.GetLocked<TestCounter>(testPartitionKey, testRowKey);
                 lockAcquired.Add(DateTime.UtcNow);
                 
                 state.Entity.Count++;
