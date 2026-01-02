@@ -22,9 +22,8 @@ public class LockingMechanismIntegrationTests : IAsyncLifetime
     public async Task InitializeAsync()
     {
         var services = new ServiceCollection();
-        services.AddActorTableEntities(options =>
+        services.AddActorTableEntities("UseDevelopmentStorage=true", options =>
         {
-            options.StorageConnectionString = "UseDevelopmentStorage=true";
             options.ContainerName = "integration-test-locks";
             options.StateContainerName = "integration-test-state";
             options.WithRetry = true;

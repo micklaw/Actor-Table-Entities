@@ -25,6 +25,7 @@ public class ActorTableEntityOptionsTests
         // Arrange
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             ContainerName = "testcontainer"
         };
 
@@ -38,6 +39,7 @@ public class ActorTableEntityOptionsTests
         // Arrange
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             WithRetry = true,
             RetryIntervalMilliseconds = 200
         };
@@ -53,6 +55,7 @@ public class ActorTableEntityOptionsTests
         // Arrange
         var options = new ActorTableEntityOptions
         {
+            StorageConnectionString = "UseDevelopmentStorage=true",
             StateContainerName = "actorstate"
         };
 
