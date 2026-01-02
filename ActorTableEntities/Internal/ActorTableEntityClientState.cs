@@ -15,7 +15,7 @@ namespace ActorTableEntities.Internal
 
         private readonly DistributedLock mutex;
 
-        public bool IsReleased { get; set; } 
+        public bool IsReleased { get; set; }
 
         public bool IsNew { get; set; }
 
@@ -31,13 +31,37 @@ namespace ActorTableEntities.Internal
             this.blobActorStateStore = blobActorStateStore;
         }
 
-        /// <summary>
-        /// Determines if blob storage should be used for state management.
-        /// Blob storage is used when configured and T is or derives from ActorTableEntity.
-        /// </summary>
-        private bool ShouldUseBlobStorage()
+        public async Task Get(string partitionKey, string rowKey)
         {
-            return blobActorStateStore != null && typeof(ActorTableEntity).IsAssignableFrom(typeof(T));
+            this.partitionKey = partitionKey;
+            this.rowKey = rowKey;
+
+            // Get metadata from table
+            var indexEntity = await tableStorageProvider.Get<ActorIndexEntity>(partitionKey, rowKey);
+
+            // Get state from blob
+            var state = await blobActorStateStore.GetStateAsync<T>(partitionKey, rowKey);
+
+            if (state == null)
+            {
+                IsNew = true;
+                this.Entity = Activator.CreateInstance<T>();
+                this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
+                this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
+            }
+            else
+            {
+                this.Entity = state;
+                // Ensure keys are set
+                this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
+                this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
+
+                // Restore metadata if available
+                if (indexEntity?.Result != null)
+                {
+                    this.Entity.ETag = indexEntity.Result.ETag;
+                }
+            }
         }
 
         public async Task Hold(string partitionKey, string rowKey)
@@ -47,50 +71,30 @@ namespace ActorTableEntities.Internal
 
             await this.mutex.AcquireAsync();
 
-            if (ShouldUseBlobStorage())
-            {
-                // Get metadata from table
-                var indexEntity = await tableStorageProvider.Get<ActorIndexEntity>(partitionKey, rowKey);
-                
-                // Get state from blob
-                var state = await blobActorStateStore.GetStateAsync<T>(partitionKey, rowKey);
+            // Get metadata from table
+            var indexEntity = await tableStorageProvider.Get<ActorIndexEntity>(partitionKey, rowKey);
 
-                if (state == null)
-                {
-                    IsNew = true;
-                    this.Entity = Activator.CreateInstance<T>();
-                    this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
-                    this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
-                }
-                else
-                {
-                    this.Entity = state;
-                    // Ensure keys are set
-                    this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
-                    this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
-                    
-                    // Restore metadata if available
-                    if (indexEntity?.Result != null)
-                    {
-                        this.Entity.Timestamp = indexEntity.Result.Timestamp;
-                        this.Entity.ETag = indexEntity.Result.ETag;
-                    }
-                }
+            // Get state from blob
+            var state = await blobActorStateStore.GetStateAsync<T>(partitionKey, rowKey);
+
+            if (state == null)
+            {
+                IsNew = true;
+                this.Entity = Activator.CreateInstance<T>();
+                this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
+                this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
             }
             else
             {
-                // Legacy approach: get full entity from table
-                var entity = await tableStorageProvider.Get<T>(partitionKey, rowKey);
+                this.Entity = state;
+                // Ensure keys are set
+                this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
+                this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
 
-                this.Entity = entity.Result;
-
-                if (this.Entity == null)
+                // Restore metadata if available
+                if (indexEntity?.Result != null)
                 {
-                    IsNew = true;
-
-                    this.Entity = Activator.CreateInstance<T>();
-                    this.Entity.PartitionKey = tableStorageProvider.ToKey(partitionKey);
-                    this.Entity.RowKey = tableStorageProvider.ToKey(rowKey);
+                    this.Entity.ETag = indexEntity.Result.ETag;
                 }
             }
 
@@ -108,35 +112,21 @@ namespace ActorTableEntities.Internal
             {
                 if (this.Entity != null)
                 {
-                    if (ShouldUseBlobStorage())
+                    // Save state to blob
+                    await blobActorStateStore.SaveStateAsync(partitionKey, rowKey, this.Entity);
+
+                    // Save metadata to table
+                    var indexEntity = new ActorIndexEntity(this.Entity.PartitionKey, this.Entity.RowKey)
                     {
-                        // Save state to blob
-                        await blobActorStateStore.SaveStateAsync(partitionKey, rowKey, this.Entity);
+                        ETag = ETag.All
+                    };
 
-                        // Save metadata to table
-                        var indexEntity = new ActorIndexEntity(this.Entity.PartitionKey, this.Entity.RowKey)
-                        {
-                            ETag = ETag.All
-                        };
+                    var result = await tableStorageProvider.InsertOrReplace(indexEntity);
 
-                        var result = await tableStorageProvider.InsertOrReplace(indexEntity);
-
-                        if (result.StatusCode.IsSuccess())
-                        {
-                            // Update entity metadata from table response
-                            this.Entity.Timestamp = result.Result.Timestamp;
-                            this.Entity.ETag = result.ETag != null ? new ETag(result.ETag) : ETag.All;
-                        }
-                    }
-                    else
+                    if (result.StatusCode.IsSuccess())
                     {
-                        // Legacy approach: save full entity to table
-                        var result = await tableStorageProvider.InsertOrReplace(this.Entity);
-
-                        if (result.StatusCode.IsSuccess())
-                        {
-                            this.Entity = result.Result;
-                        }
+                        // Update entity metadata from table response
+                        this.Entity.ETag = result.ETag != null ? new ETag(result.ETag) : ETag.All;
                     }
                 }
             }

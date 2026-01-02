@@ -24,11 +24,11 @@ namespace ActorTableEntities.Internal
             partitionKey.CheckNotNull(nameof(partitionKey));
             rowKey.CheckNotNull(nameof(rowKey));
 
-            /* This will throw a storage exception if it fails to acquire the lock */
+            Mutex = DistributedLockFactory.Get(tableStorageProvider.ToKey(partitionKey + rowKey));
 
-            var response = await tableStorageProvider.Get<T>(partitionKey, rowKey);
-
-            return response?.Result;
+            var state = new ActorTableEntityClientState<T>(Mutex, tableStorageProvider, blobActorStateStore);
+            await state.Get(partitionKey, rowKey);
+            return state.Entity;
         }
 
         public async Task<IActorTableEntityClientState<T>> GetLocked<T>(string partitionKey, string rowKey) where T : class, ITableEntity, new()
@@ -36,11 +36,12 @@ namespace ActorTableEntities.Internal
             partitionKey.CheckNotNull(nameof(partitionKey));
             rowKey.CheckNotNull(nameof(rowKey));
 
-            /* This will throw a storage exception if it fails to acquire the lock */
-
             Mutex = DistributedLockFactory.Get(tableStorageProvider.ToKey(partitionKey + rowKey));
 
             var state = new ActorTableEntityClientState<T>(Mutex, tableStorageProvider, blobActorStateStore);
+
+            /* This will throw a storage exception if it fails to acquire the lock */
+
             await state.Hold(partitionKey, rowKey);
             return state;
         }

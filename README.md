@@ -80,78 +80,61 @@ The code above lets you take a hold of an entity, do some stuff on it, then rele
 ## Setup
 Finally, install the nuget package above, and bootstrap your code like so.
 
-### Azure Functions (.NET 8 Isolated Worker Model)
+### Quick Start (Recommended)
+The simplest way to get started is to pass your connection string directly. The library uses sensible defaults for all other options:
+
 ```csharp
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
     .ConfigureServices(services =>
     {
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
-        
-        // Configure ActorTableEntities
-        services.AddActorTableEntities(options =>
-        {
-            options.StorageConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage") 
-                                             ?? "UseDevelopmentStorage=true";
-            options.ContainerName = "entitylocks";
-            options.WithRetry = true;
-            options.RetryIntervalMilliseconds = 100;
-        });
+        services.AddActorTableEntities(
+            Environment.GetEnvironmentVariable("AzureWebJobsStorage") ?? "UseDevelopmentStorage=true"
+        );
     })
     .Build();
 
 host.Run();
 ```
 
-### Azure Functions (In-Process Model - Legacy)
+This uses the following defaults:
+| Option | Default Value |
+|--------|---------------|
+| `ContainerName` | `"entitylocks"` |
+| `StateContainerName` | `"entitystate"` |
+| `WithRetry` | `true` |
+| `RetryIntervalMilliseconds` | `100` |
+
+### Custom Configuration
+If you need to customize the options, you can pass an optional configuration delegate:
+
 ```csharp
-public class Startup : IWebJobsStartup
-{
-    public void Configure(IWebJobsBuilder builder)
+services.AddActorTableEntities(
+    Environment.GetEnvironmentVariable("AzureWebJobsStorage") ?? "UseDevelopmentStorage=true",
+    options =>
     {
-        builder.AddActorTableEntities(options =>
-        {
-            options.StorageConnectionString = "UseDevelopmentStorage=true";
-            options.ContainerName = "entitylocks";
-            options.WithRetry = true;
-            options.RetryIntervalMilliseconds = 100;
-        });
+        options.ContainerName = "mylocks";
+        options.StateContainerName = "mystate";
+        options.WithRetry = true;
+        options.RetryIntervalMilliseconds = 200;
     }
-}
+);
 ```
 
-### Standard Configuration (Table Storage)
-For .NET 8+ with dependency injection:
-```csharp
-services.AddActorTableEntities(options =>
-{
-    options.StorageConnectionString = "UseDevelopmentStorage=true";
-    options.ContainerName = "entitylocks";
-    options.WithRetry = true;
-    options.RetryIntervalMilliseconds = 100;
-});
-```
+### Configuration Options
 
-### Enhanced Configuration (Blob Storage for State)
-For improved scalability and to eliminate Table Storage serialization constraints, you can configure the library to store actor state in Azure Blob Storage while keeping metadata in Table Storage:
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `ContainerName` | `string` | `"entitylocks"` | Blob container name for distributed locks |
+| `StateContainerName` | `string` | `"entitystate"` | Blob container name for actor state storage |
+| `WithRetry` | `bool` | `true` | Enable retry logic when acquiring locks |
+| `RetryIntervalMilliseconds` | `int` | `100` | Interval between retry attempts in milliseconds |
 
-```csharp
-services.AddActorTableEntities(options =>
-{
-    options.StorageConnectionString = "UseDevelopmentStorage=true";
-    options.ContainerName = "entitylocks";
-    options.StateContainerName = "actorstate"; // Enable blob-based state storage
-    options.WithRetry = true;
-    options.RetryIntervalMilliseconds = 100;
-});
-```
-
-When `StateContainerName` is configured:
-- **Actor metadata** (PartitionKey, RowKey, Timestamp, ETag) is stored in Azure Table Storage
-- **Actor state** is stored as JSON in Azure Blob Storage
-- This approach provides better scalability and removes serialization limitations
-- The existing blob locking mechanism ensures thread-safe operations
+### State Storage
+Actor state is stored as JSON in Azure Blob Storage while metadata (PartitionKey, RowKey, Timestamp, ETag) is kept in Azure Table Storage. This approach provides:
+- Better scalability
+- No serialization limitations from Table Storage
+- Thread-safe operations via the existing blob locking mechanism
 
 ## Local Development with Aspire
 

@@ -2,27 +2,14 @@
 {
     public class ActorTableEntityOptions
     {
-        public string StorageConnectionString { get; set; }
+        public required string StorageConnectionString { get; set; }
 
-        public string ContainerName { get; set;  }
+        public string ContainerName { get; set;  } = "entitylocks";
 
-        public string StateContainerName { get; set; }
+        public string StateContainerName { get; set; } = "entitystate";
 
-        public bool WithRetry { get; set; }
+        public bool WithRetry { get; set; } = true;
 
-        public int RetryIntervalMilliseconds { get; set; }
-
-        public ActorTableEntityOptions(string storageConnectionString = null, string containerName = null, string stateContainerName = null, bool withRetry = false, int retryIntervalMilliseconds = 50)
-        {
-            StorageConnectionString = storageConnectionString;
-
-            ContainerName = containerName;
-
-            StateContainerName = stateContainerName;
-
-            WithRetry = withRetry;
-
-            RetryIntervalMilliseconds = retryIntervalMilliseconds;
-        }
+        public int RetryIntervalMilliseconds { get; set; } = 100;
     }
 }
